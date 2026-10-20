@@ -5,7 +5,7 @@
  */
 
 export const SITE_CONFIG = {
-  photographer: 'Elena Moreau',
+  photographer: 'Sirawit Akrarasomboon',
   /** Placeholder address (reserved example.com domain) - replace with the real contact email. */
-  contactEmail: 'hello@example.com',
+  contactEmail: 'sirawittongla@gmail.com',
 } as const;

@@ -50,7 +50,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'architecture',
     r2_key: 'captures/architecture/brutalist-atrium-01.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=85',
+      '/api/media/captures/architecture/brutalist-atrium-01.jpg',
     width: 3840,
     height: 2560,
     aspect_ratio: 1.5,
@@ -75,7 +75,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'street',
     r2_key: 'captures/street/shibuya-rain-reflections.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1600&q=85',
+      '/api/media/captures/street/shibuya-rain-reflections.jpg',
     width: 3840,
     height: 2560,
     aspect_ratio: 1.5,
@@ -100,7 +100,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'minimalism',
     r2_key: 'captures/minimalism/mist-over-lake-biwa.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=85',
+      '/api/media/captures/minimalism/mist-over-lake-biwa.jpg',
     width: 3840,
     height: 2160,
     aspect_ratio: 1.78,
@@ -125,7 +125,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'architecture',
     r2_key: 'captures/architecture/spiral-concrete-stairs.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80',
+      '/api/media/captures/architecture/spiral-concrete-stairs.jpg',
     width: 2560,
     height: 3840,
     aspect_ratio: 0.67,
@@ -150,7 +150,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'street',
     r2_key: 'captures/street/night-market-neon.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1400&q=85',
+      '/api/media/captures/street/night-market-neon.jpg',
     width: 3000,
     height: 3000,
     aspect_ratio: 1.0,
@@ -175,7 +175,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'minimalism',
     r2_key: 'captures/minimalism/solitary-pine-ridge.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=85',
+      '/api/media/captures/minimalism/solitary-pine-ridge.jpg',
     width: 2560,
     height: 3840,
     aspect_ratio: 0.67,
@@ -200,7 +200,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'architecture',
     r2_key: 'captures/architecture/nordic-glass-pavilion.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=85',
+      '/api/media/captures/architecture/nordic-glass-pavilion.jpg',
     width: 3840,
     height: 2560,
     aspect_ratio: 1.5,
@@ -225,7 +225,7 @@ export const SEED_CAPTURES: Capture[] = [
     collection_slug: 'minimalism',
     r2_key: 'captures/minimalism/white-sands-horizon.jpg',
     image_url:
-      'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1600&q=85',
+      '/api/media/captures/minimalism/white-sands-horizon.jpg',
     width: 3840,
     height: 2560,
     aspect_ratio: 1.5,

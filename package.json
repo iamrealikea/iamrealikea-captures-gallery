@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "sync": "tsx scripts/sync-captures.ts",
+    "fixtures:generate": "tsx scripts/generate-sample-captures.ts",
     "cf:deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {

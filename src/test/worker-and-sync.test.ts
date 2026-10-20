@@ -21,7 +21,11 @@ import {
   deleteCaptureFromDb,
 } from '../../worker/db';
 import { MockStore, defaultMockStore } from '../data/mockStore';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
 import { runCliSync, scanLocalCaptures } from '../../scripts/sync-captures';
+import { generateAllSampleCaptures } from '../../scripts/generate-sample-captures';
 
 function toBase64Url(bytes: Uint8Array): string {
   let binary = '';
@@ -299,23 +303,28 @@ describe('Cloudflare Worker API, Zero Trust Auth & Local Sync CLI', () => {
     });
   });
 
-  it('scans ./captures/ and executes CLI sync in both --dry-run and live Worker modes', async () => {
-    const items = await scanLocalCaptures();
+  it('scans captures directory and executes CLI sync in both --dry-run and live Worker modes', async () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'worker-sync-test-'));
+    generateAllSampleCaptures(tempDir, true);
+    const tempCaptures = path.join(tempDir, 'captures');
+    const items = await scanLocalCaptures(tempCaptures);
     expect(items.length).toBe(6);
 
-    const dryRunReport = await runCliSync({ dryRun: true, silent: true });
+    const dryRunReport = await runCliSync({ capturesDir: tempCaptures, dryRun: true, silent: true });
     expect(dryRunReport.dryRun).toBe(true);
     expect(dryRunReport.items.length).toBe(6);
     expect(dryRunReport.result.synced).toBe(6);
 
     const env = createMockWorkerEnv();
     const liveReport = await runCliSync({
+      capturesDir: tempCaptures,
       dryRun: false,
       silent: true,
       workerEnv: env,
     });
     expect(liveReport.dryRun).toBe(false);
     expect(liveReport.result.synced).toBe(6);
+    fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
   it('rejects unsupported MIME types, missing titles, and JWT audience mismatches', async () => {

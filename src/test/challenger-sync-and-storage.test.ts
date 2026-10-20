@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { runCliSync, scanLocalCaptures } from '../../scripts/sync-captures';
+import { generateAllSampleCaptures } from '../../scripts/generate-sample-captures';
 import {
   parseBinaryDimensions,
   normalizeExifDate,
@@ -53,8 +54,10 @@ describe('Empirical Challenger 2 — CLI Sync, D1 Schema & MockStore Contracts',
   // 1. Local Folder Sync CLI: Standard ./captures/ and --dry-run
   // =========================================================================
   describe('1. Local Folder Sync CLI Standard Operation & Dry-Run Contract', () => {
-    it('scans the actual project ./captures directory and extracts valid metadata for all 6 photos', async () => {
-      const items = await scanLocalCaptures();
+    it('scans the captures directory and extracts valid metadata for all 6 photos', async () => {
+      const fixtureDir = path.join(tempCapturesDir, 'captures');
+      generateAllSampleCaptures(tempCapturesDir, true);
+      const items = await scanLocalCaptures(fixtureDir);
       expect(items).toHaveLength(6);
 
       const collections = new Set(items.map((i) => i.collection_slug));
@@ -81,11 +84,16 @@ describe('Empirical Challenger 2 — CLI Sync, D1 Schema & MockStore Contracts',
     });
 
     it('executes --dry-run without modifying worker database or R2 storage', async () => {
+      const fixtureDir = path.join(tempCapturesDir, 'captures');
+      if (!fs.existsSync(fixtureDir)) {
+        generateAllSampleCaptures(tempCapturesDir, true);
+      }
       const mockEnv = createMockWorkerEnv();
       const initialDbSize = mockEnv._capturesStore.size;
       const initialR2Size = mockEnv._r2Store.size;
 
       const report = await runCliSync({
+        capturesDir: fixtureDir,
         dryRun: true,
         silent: true,
         workerEnv: mockEnv,
@@ -578,6 +586,10 @@ describe('Empirical Challenger 2 — CLI Sync, D1 Schema & MockStore Contracts',
   // =========================================================================
   describe('5. POST /api/admin/sync Endpoint & Live Sync Contract', () => {
     it('handles batch ingestion with automatic insertion, updating, and in-batch deduplication', async () => {
+      const fixtureDir = path.join(tempCapturesDir, 'captures');
+      if (!fs.existsSync(fixtureDir)) {
+        generateAllSampleCaptures(tempCapturesDir, true);
+      }
       const mockEnv = createMockWorkerEnv();
       const initialDbSize = mockEnv._capturesStore.size;
 
@@ -660,6 +672,10 @@ describe('Empirical Challenger 2 — CLI Sync, D1 Schema & MockStore Contracts',
     });
 
     it('rejects invalid JSON request body on /api/admin/sync with HTTP 400', async () => {
+      const fixtureDir = path.join(tempCapturesDir, 'captures');
+      if (!fs.existsSync(fixtureDir)) {
+        generateAllSampleCaptures(tempCapturesDir, true);
+      }
       const mockEnv = createMockWorkerEnv();
       const res = await (await import('../../worker/index')).default.fetch(
         new Request('http://localhost/api/admin/sync', {
@@ -675,6 +691,10 @@ describe('Empirical Challenger 2 — CLI Sync, D1 Schema & MockStore Contracts',
     });
 
     it('handles empty captures array on /api/admin/sync returning synced: 0', async () => {
+      const fixtureDir = path.join(tempCapturesDir, 'captures');
+      if (!fs.existsSync(fixtureDir)) {
+        generateAllSampleCaptures(tempCapturesDir, true);
+      }
       const mockEnv = createMockWorkerEnv();
       const res = await (await import('../../worker/index')).default.fetch(
         new Request('http://localhost/api/admin/sync', {
@@ -690,9 +710,14 @@ describe('Empirical Challenger 2 — CLI Sync, D1 Schema & MockStore Contracts',
     });
 
     it('executes live sync against mock Worker env with R2 asset upload and D1 persistence', async () => {
+      const fixtureDir = path.join(tempCapturesDir, 'captures');
+      if (!fs.existsSync(fixtureDir)) {
+        generateAllSampleCaptures(tempCapturesDir, true);
+      }
       const mockEnv = createMockWorkerEnv();
 
       const report = await runCliSync({
+        capturesDir: fixtureDir,
         dryRun: false,
         silent: true,
         workerEnv: mockEnv,

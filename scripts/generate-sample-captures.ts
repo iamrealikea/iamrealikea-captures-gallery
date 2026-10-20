@@ -312,7 +312,10 @@ export const SAMPLE_CAPTURES: ExifFixtureConfig[] = [
   }
 ];
 
-export function generateAllSampleCaptures(projectRoot = process.cwd()): void {
+export function generateAllSampleCaptures(
+  projectRoot = process.cwd(),
+  silent = false
+): void {
   for (const config of SAMPLE_CAPTURES) {
     const fullPath = path.resolve(projectRoot, config.filePath);
     const dir = path.dirname(fullPath);
@@ -321,7 +324,9 @@ export function generateAllSampleCaptures(projectRoot = process.cwd()): void {
     }
     const jpegBuffer = buildExifJpeg(config);
     fs.writeFileSync(fullPath, jpegBuffer);
-    console.log(`Generated: ${config.filePath} (${jpegBuffer.length} bytes)`);
+    if (!silent) {
+      console.log(`Generated: ${config.filePath} (${jpegBuffer.length} bytes)`);
+    }
   }
 }
 
