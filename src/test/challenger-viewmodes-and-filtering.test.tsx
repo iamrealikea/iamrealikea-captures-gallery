@@ -65,9 +65,7 @@ describe('Empirical Challenger: 3 View Modes, Filtering, Sorting & Image Priorit
 
       for (const article of articles) {
         expect(article).toHaveClass('break-inside-avoid');
-        expect(article).toHaveClass('rounded-xl');
-        expect(article).toHaveClass('border-slate-200');
-        expect(article).toHaveClass('bg-white');
+        expect(article).toHaveClass('mb-9');
       }
     });
 
@@ -135,11 +133,10 @@ describe('Empirical Challenger: 3 View Modes, Filtering, Sorting & Image Priorit
       const editorialList = screen.getByTestId('gallery-editorial-list');
       expect(editorialList).toHaveClass(
         'divide-y',
-        'divide-slate-200',
+        'divide-line',
         'overflow-hidden',
-        'rounded-xl',
         'border',
-        'border-slate-200',
+        'border-line',
         'bg-white'
       );
 
@@ -547,7 +544,7 @@ describe('Empirical Challenger: 3 View Modes, Filtering, Sorting & Image Priorit
       render(<App />);
 
       // Filter pills
-      const allPill = screen.getByRole('button', { name: /all captures/i });
+      const allPill = screen.getByRole('button', { name: /all photographs/i });
       expect(allPill).toHaveClass('min-h-10');
 
       const archPill = screen.getByRole('button', {

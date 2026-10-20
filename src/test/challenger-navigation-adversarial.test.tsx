@@ -66,31 +66,39 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
   // =========================================================================
   describe('1. Top-Level Navigation Matrix & Active Nav Pill Styling', () => {
     const VIEWS: { id: ActiveView; label: RegExp; headingRegex: RegExp }[] = [
-      { id: 'gallery', label: /^gallery$/i, headingRegex: /curated visual archive/i },
+      { id: 'gallery', label: /^gallery$/i, headingRegex: /a moment, at home/i },
       { id: 'collections', label: /^collections$/i, headingRegex: /curated collections/i },
-      { id: 'about', label: /about & gear/i, headingRegex: /gear & optics inventory/i },
+      { id: 'about', label: /^about$/i, headingRegex: /gear & optics inventory/i },
       { id: 'admin', label: /admin studio/i, headingRegex: /admin curation studio/i },
     ];
 
     it('enforces strict mutual exclusivity of active nav pill and renders correct headings', () => {
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
+      const getViewButton = (view: (typeof VIEWS)[number]) =>
+        view.id === 'admin'
+          ? screen.getByRole('button', { name: view.label })
+          : within(nav).getByRole('button', { name: view.label });
 
       // Test every possible view transition
       for (const target of VIEWS) {
-        const btn = within(nav).getByRole('button', { name: target.label });
+        const btn = getViewButton(target);
         fireEvent.click(btn);
 
         // Verify active indicator
         expect(btn).toHaveAttribute('aria-current', 'page');
-        expect(btn).toHaveClass('border-blue-600', 'bg-blue-50', 'text-blue-700', 'font-semibold');
+        if (target.id !== 'admin') {
+          expect(btn).toHaveClass('border-ink', 'text-ink', 'font-semibold');
+        }
 
         // Verify all OTHER buttons are inactive
         for (const other of VIEWS) {
           if (other.id !== target.id) {
-            const otherBtn = within(nav).getByRole('button', { name: other.label });
+            const otherBtn = getViewButton(other);
             expect(otherBtn).not.toHaveAttribute('aria-current');
-            expect(otherBtn).toHaveClass('border-transparent', 'bg-white', 'text-slate-600');
+            if (other.id !== 'admin') {
+              expect(otherBtn).toHaveClass('border-transparent', 'text-stone');
+            }
           }
         }
 
@@ -115,13 +123,13 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       expect(screen.queryByText(/archival principles/i)).not.toBeInTheDocument();
 
       // 3. In About: Collections and Toolbar unmounted, Bio & Gear mounted
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       expect(screen.queryByTestId('collection-card-architecture')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /aspect-ratio masonry grid/i })).not.toBeInTheDocument();
       expect(screen.getByText(/archival principles/i)).toBeInTheDocument();
 
       // 4. In Admin: Admin Studio table mounted, About unmounted
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
       expect(screen.queryByText(/archival principles/i)).not.toBeInTheDocument();
       expect(screen.getByRole('heading', { name: /indexed d1 capture catalog/i })).toBeInTheDocument();
     });
@@ -131,24 +139,20 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
       const navButtons = within(nav).getAllByRole('button');
 
-      expect(navButtons).toHaveLength(4);
+      expect(navButtons).toHaveLength(3);
       for (const btn of navButtons) {
         expect(btn).toHaveClass('min-h-10');
         expect(btn).toHaveClass(
-          'focus-visible:outline-2',
-          'focus-visible:outline-offset-2',
-          'focus-visible:outline-blue-600'
+          'focus-visible:outline-2'
         );
       }
 
       // Brand button inside header
       const header = screen.getByRole('banner');
-      const brandBtn = within(header).getByRole('button', { name: /archival frames/i });
+      const brandBtn = within(header).getByRole('button', { name: /captures/i });
       expect(brandBtn).toHaveClass('min-h-10');
       expect(brandBtn).toHaveClass(
-        'focus-visible:outline-2',
-        'focus-visible:outline-offset-2',
-        'focus-visible:outline-blue-600'
+        'focus-visible:outline-2'
       );
     });
 
@@ -156,10 +160,10 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
       const header = screen.getByRole('banner');
-      const brandBtn = within(header).getByRole('button', { name: /archival frames/i });
+      const brandBtn = within(header).getByRole('button', { name: /captures/i });
 
       // Navigate to admin
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
       expect(screen.getByRole('heading', { level: 1, name: /admin curation studio/i })).toBeInTheDocument();
 
       // Click brand logo
@@ -168,7 +172,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
         'aria-current',
         'page'
       );
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
     });
   });
 
@@ -195,13 +199,13 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       fireEvent.click(exploreBtn);
 
       // Asserts view switched to Gallery
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
       expect(within(nav).getByRole('button', { name: /^gallery$/i })).toHaveAttribute('aria-current', 'page');
 
       // Asserts collection pill is active
       const archPill = screen.getByRole('button', { name: /architectural geometry/i });
       expect(archPill).toHaveAttribute('aria-pressed', 'true');
-      expect(archPill).toHaveClass('bg-blue-600', 'text-white');
+      expect(archPill).toHaveClass('bg-ink', 'text-white');
 
       // Asserts search input was cleared by cross-filter
       const updatedSearchInput = screen.getByPlaceholderText(/search title, location, camera/i);
@@ -222,7 +226,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       fireEvent.click(within(nav).getByRole('button', { name: /^collections$/i }));
       fireEvent.click(screen.getByRole('button', { name: /explore nocturnal street & transit/i }));
 
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
       const streetPill = screen.getByRole('button', { name: /nocturnal street & transit/i });
       expect(streetPill).toHaveAttribute('aria-pressed', 'true');
 
@@ -238,7 +242,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       fireEvent.click(within(nav).getByRole('button', { name: /^collections$/i }));
       fireEvent.click(screen.getByRole('button', { name: /explore atmospheric minimalism/i }));
 
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
       const minPill = screen.getByRole('button', { name: /atmospheric minimalism/i });
       expect(minPill).toHaveAttribute('aria-pressed', 'true');
 
@@ -262,7 +266,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       fireEvent.click(minPill);
       expect(minPill).toHaveAttribute('aria-pressed', 'false');
 
-      const allPill = screen.getByRole('button', { name: /all captures/i });
+      const allPill = screen.getByRole('button', { name: /all photographs/i });
       expect(allPill).toHaveAttribute('aria-pressed', 'true');
 
       // All captures are visible again
@@ -280,11 +284,11 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       const leicaBtn = screen.getByRole('button', { name: /view leica q2 captures/i });
       fireEvent.click(leicaBtn);
 
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
       expect(within(nav).getByRole('button', { name: /^gallery$/i })).toHaveAttribute('aria-current', 'page');
 
       const cameraSelect = screen.getByLabelText(/camera or gear/i) as unknown as HTMLSelectElement;
@@ -300,7 +304,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       const sonyBtn = screen.getByRole('button', { name: /view sony a7r v captures/i });
       fireEvent.click(sonyBtn);
 
@@ -317,13 +321,13 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       const lensBtn = screen.getByRole('button', {
         name: /view fe 24-70mm f\/2\.8 gm ii captures/i,
       });
       fireEvent.click(lensBtn);
 
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
 
       const cameraSelect = screen.getByLabelText(/camera or gear/i) as unknown as HTMLSelectElement;
       expect(cameraSelect.value).toBe('FE 24-70mm f/2.8 GM II');
@@ -344,7 +348,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       const summiluxBtn = screen.getByRole('button', {
         name: /view summilux 28mm f\/1\.7 asph captures/i,
       });
@@ -370,11 +374,11 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       );
 
       // Now navigate to About and select a gear item (Sony A7R V)
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       fireEvent.click(screen.getByRole('button', { name: /view sony a7r v captures/i }));
 
       // Collection filter should now be reset to "All captures"
-      const allPill = screen.getByRole('button', { name: /all captures/i });
+      const allPill = screen.getByRole('button', { name: /all photographs/i });
       expect(allPill).toHaveAttribute('aria-pressed', 'true');
 
       // User sees Sony A7R V captures
@@ -404,7 +408,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
 
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
-      expect(within(nav).getByRole('button', { name: /about & gear/i })).toHaveAttribute(
+      expect(within(nav).getByRole('button', { name: /^about$/i })).toHaveAttribute(
         'aria-current',
         'page'
       );
@@ -415,8 +419,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       window.history.replaceState({}, '', '/admin');
       render(<App />);
 
-      const nav = screen.getByRole('navigation', { name: /primary navigation/i });
-      expect(within(nav).getByRole('button', { name: /admin studio/i })).toHaveAttribute(
+      expect(screen.getByRole('button', { name: /admin studio/i })).toHaveAttribute(
         'aria-current',
         'page'
       );
@@ -432,7 +435,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
         'aria-current',
         'page'
       );
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
     });
 
     it('invokes window.history.pushState on navigation', () => {
@@ -443,10 +446,10 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       fireEvent.click(within(nav).getByRole('button', { name: /^collections$/i }));
       expect(pushStateSpy).toHaveBeenCalledWith({}, '', '/collections');
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       expect(pushStateSpy).toHaveBeenCalledWith({}, '', '/about');
 
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
       expect(pushStateSpy).toHaveBeenCalledWith({}, '', '/admin');
 
       fireEvent.click(within(nav).getByRole('button', { name: /^gallery$/i }));
@@ -478,7 +481,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       });
 
       await waitFor(() => {
-        expect(within(nav).getByRole('button', { name: /admin studio/i })).toHaveAttribute(
+        expect(screen.getByRole('button', { name: /admin studio/i })).toHaveAttribute(
           'aria-current',
           'page'
         );
@@ -496,7 +499,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
           'aria-current',
           'page'
         );
-        expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
       });
     });
 
@@ -565,7 +568,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       });
 
       // About
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       await waitFor(() => {
         const heading = document.getElementById('about-view-heading');
         expect(heading).toHaveAttribute('tabindex', '-1');
@@ -573,7 +576,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       });
 
       // Admin
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
       await waitFor(() => {
         const heading = document.getElementById('admin-view-heading');
         expect(heading).toHaveAttribute('tabindex', '-1');
@@ -607,7 +610,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       fireEvent.click(screen.getByRole('button', { name: /view leica q2 captures/i }));
 
       await waitFor(() => {
@@ -648,9 +651,8 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       delete (document as any).startViewTransition;
 
       render(<App />);
-      const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
       await waitFor(() => {
         const heading = document.getElementById('admin-view-heading');
         expect(heading).toHaveAttribute('tabindex', '-1');
@@ -782,9 +784,12 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
       ];
 
       for (const view of viewOrder) {
-        const btn = within(nav).getByRole('button', {
-          name: new RegExp(view === 'about' ? 'about & gear' : view === 'admin' ? 'admin studio' : `^${view}$`, 'i'),
-        });
+        const btn =
+          view === 'admin'
+            ? screen.getByRole('button', { name: /admin studio/i })
+            : within(nav).getByRole('button', {
+                name: new RegExp(view === 'about' ? '^about$' : `^${view}$`, 'i'),
+              });
         fireEvent.click(btn);
       }
 
@@ -793,7 +798,7 @@ describe('Empirical Challenger: Navigation, View Transitions, Cross-Filtering & 
         'aria-current',
         'page'
       );
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
     });
 
     it('clicking already active view nav button does not break or cause redundant pushState', () => {

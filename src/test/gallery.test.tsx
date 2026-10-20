@@ -34,23 +34,23 @@ describe('Gallery Toolbar — Filtering, Multi-Field Search & Sorting', () => {
       within(nav).getByRole('button', { name: /^collections$/i })
     ).toBeInTheDocument();
     expect(
-      within(nav).getByRole('button', { name: /about & gear/i })
+      within(nav).getByRole('button', { name: /^about$/i })
     ).toBeInTheDocument();
     expect(
-      within(nav).getByRole('button', { name: /admin studio/i })
+      screen.getByRole('button', { name: /admin studio/i })
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('heading', { name: /curated visual archive/i })
+      screen.getByRole('heading', { name: /a moment, at home/i })
     ).toBeInTheDocument();
   });
 
   it('displays collection filter pills with exact counts and active state styling', () => {
     render(<App />);
 
-    const allPill = screen.getByRole('button', { name: /all captures/i });
+    const allPill = screen.getByRole('button', { name: /all photographs/i });
     expect(allPill).toHaveAttribute('aria-pressed', 'true');
-    expect(allPill).toHaveClass('border-blue-600', 'bg-blue-600', 'text-white');
+    expect(allPill).toHaveClass('bg-ink', 'text-white');
     expect(within(allPill).getByText('8')).toBeInTheDocument();
 
     const archPill = screen.getByRole('button', { name: /architectural geometry/i });
@@ -71,7 +71,7 @@ describe('Gallery Toolbar — Filtering, Multi-Field Search & Sorting', () => {
     fireEvent.click(minPill);
 
     expect(minPill).toHaveAttribute('aria-pressed', 'true');
-    expect(minPill).toHaveClass('border-blue-600', 'bg-blue-600', 'text-white');
+    expect(minPill).toHaveClass('bg-ink', 'text-white');
     expect(screen.getByText('Mist over Lake Biwa')).toBeInTheDocument();
     expect(screen.getByText('Solitary pine on basalt ridge')).toBeInTheDocument();
     expect(screen.getByText('Gypsum dune shadow line')).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe('Gallery Toolbar — Filtering, Multi-Field Search & Sorting', () => {
     // Toggle behavior: clicking active pill deselects it and restores all captures
     fireEvent.click(minPill);
     expect(minPill).toHaveAttribute('aria-pressed', 'false');
-    const allPill = screen.getByRole('button', { name: /all captures/i });
+    const allPill = screen.getByRole('button', { name: /all photographs/i });
     expect(allPill).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByText('Brutalist concrete atrium')).toBeInTheDocument();
   });
@@ -194,7 +194,7 @@ describe('Gallery Toolbar — Filtering, Multi-Field Search & Sorting', () => {
 
     // Should return to Gallery filtered by 'street'
     expect(
-      screen.getByRole('heading', { name: /curated visual archive/i })
+      screen.getByRole('heading', { name: /a moment, at home/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/shibuya rain reflections/i)).toBeInTheDocument();
     expect(
@@ -202,7 +202,7 @@ describe('Gallery Toolbar — Filtering, Multi-Field Search & Sorting', () => {
     ).not.toBeInTheDocument();
 
     // Switch to About & gear view
-    fireEvent.click(screen.getByRole('button', { name: /about & gear/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^about$/i }));
     expect(
       screen.getByRole('heading', { name: /gear & optics inventory/i })
     ).toBeInTheDocument();
@@ -212,7 +212,7 @@ describe('Gallery Toolbar — Filtering, Multi-Field Search & Sorting', () => {
       screen.getByRole('button', { name: /view sony a7r v captures/i })
     );
     expect(
-      screen.getByRole('heading', { name: /curated visual archive/i })
+      screen.getByRole('heading', { name: /a moment, at home/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/spiral concrete stairwell/i)).toBeInTheDocument();
     expect(

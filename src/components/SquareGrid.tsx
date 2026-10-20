@@ -38,22 +38,22 @@ export const SquareGrid: React.FC<SquareGridProps> = ({
         return (
           <article
             key={capture.id}
-            className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors hover:border-slate-300"
+            className="overflow-hidden rounded-none border border-line bg-white  transition-colors hover:border-slate-300"
           >
             <button
               type="button"
               onClick={() => onSelectCapture(capture)}
               aria-label={`Inspect ${capture.title}`}
-              className="group flex h-full w-full flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              className="group flex h-full w-full flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               {/* Contact Sheet Frame Header */}
-              <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3.5 py-2 text-xs font-medium text-slate-500">
+              <div className="flex items-center justify-between border-b border-line bg-paper px-3.5 py-2 text-xs font-medium text-stone">
                 <span className="font-mono">FRAME #{frameNumber}</span>
                 <span>{capture.collection_slug}</span>
               </div>
 
               {/* 1:1 Square Frame */}
-              <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+              <div className="relative aspect-square w-full overflow-hidden bg-line/40">
                 <img
                   src={capture.image_url}
                   alt={capture.title}
@@ -77,9 +77,9 @@ export const SquareGrid: React.FC<SquareGridProps> = ({
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
                 {capture.featured && (
-                  <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white/95 px-2 py-0.5 text-xs font-medium text-slate-900">
+                  <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 rounded-md border border-line bg-white/95 px-2 py-0.5 text-xs font-medium text-ink">
                     <Sparkles
-                      className="h-3 w-3 text-blue-600"
+                      className="h-3 w-3 text-ink"
                       aria-hidden="true"
                     />
                     <span>Featured</span>
@@ -88,10 +88,10 @@ export const SquareGrid: React.FC<SquareGridProps> = ({
 
                 {/* Contact Sheet Hover Overlay */}
                 <div
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                  className="pointer-events-none absolute inset-0 flex items-center justify-center bg-ink/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                   aria-hidden="true"
                 >
-                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white shadow-xs backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1.5 rounded-none border border-white/20 bg-ink/80 px-3 py-1.5 text-xs font-medium text-white shadow-xs backdrop-blur-sm">
                     <Maximize2 className="h-3.5 w-3.5 text-white" aria-hidden="true" />
                     <span>Inspect frame</span>
                   </span>
@@ -101,19 +101,19 @@ export const SquareGrid: React.FC<SquareGridProps> = ({
               {/* Caption & EXIF Footer */}
               <div className="flex flex-1 flex-col justify-between p-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 group-hover:text-blue-600">
+                  <h3 className="text-sm font-semibold text-ink group-hover:text-ink">
                     {capture.title}
                   </h3>
                   {capture.location && (
-                    <p className="mt-0.5 text-xs text-slate-500">
+                    <p className="mt-0.5 text-xs text-stone">
                       {capture.location}
                     </p>
                   )}
                 </div>
 
-                <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-2.5 text-xs text-slate-500">
-                  <span className="inline-flex items-center gap-1 truncate font-medium text-slate-700">
-                    <Camera className="h-3 w-3 shrink-0 text-slate-400" aria-hidden="true" />
+                <div className="mt-3 flex items-center justify-between gap-2 border-t border-line pt-2.5 text-xs text-stone">
+                  <span className="inline-flex items-center gap-1 truncate font-medium text-stone">
+                    <Camera className="h-3 w-3 shrink-0 text-stone" aria-hidden="true" />
                     <span className="truncate">
                       {capture.camera_model || 'Camera'}
                     </span>

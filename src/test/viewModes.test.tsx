@@ -68,7 +68,7 @@ describe('Gallery View Modes — Layout Structures & LCP Image Priority', () => 
     expect(editorialBtn).toHaveAttribute('aria-pressed', 'true');
 
     const editorialList = screen.getByTestId('gallery-editorial-list');
-    expect(editorialList).toHaveClass('divide-y', 'divide-slate-200');
+    expect(editorialList).toHaveClass('divide-y', 'divide-line');
 
     // Verify thumbnail button with 240px width container on sm viewports (Mist over Lake Biwa is 1st in featured)
     const thumbnailBtn = within(editorialList).getByRole('button', {

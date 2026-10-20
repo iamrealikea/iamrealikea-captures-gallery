@@ -177,7 +177,7 @@ describe('Empirical Challenger: Photo Lightbox Dialog Adversarial Suite', () => 
       expect(dialog.hasAttribute('open')).toBe(false);
 
       // Main gallery remains mounted and interactive
-      expect(screen.getByRole('heading', { level: 1, name: /curated visual archive/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /a moment, at home/i })).toBeInTheDocument();
     });
   });
 

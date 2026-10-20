@@ -30,6 +30,8 @@ import {
 import { slugify } from './utils/exifExtractor';
 import { createSvgPlaceholder } from './utils/imagePlaceholder';
 import { runViewTransition } from './utils/viewTransitions';
+import { SITE_CONFIG } from './data/siteConfig';
+import { ArrowUpRight } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { GalleryView } from './components/GalleryView';
 import { CollectionsView } from './components/CollectionsView';
@@ -372,21 +374,41 @@ export const App: React.FC = () => {
     setCaptures((prev) => prev.filter((c) => c.id !== id && c.slug !== id));
   }, []);
 
+
+  // Search shortcut in the navigation: jump to the gallery and focus the search field
+  const handleSearchShortcut = useCallback(() => {
+    const focusSearch = () => {
+      const input = document.getElementById('gallery-search-input');
+      if (input instanceof HTMLInputElement) {
+        input.scrollIntoView({ block: 'center' });
+        input.focus();
+      }
+    };
+    if (activeView === 'gallery') {
+      focusSearch();
+      return;
+    }
+    handleSelectView('gallery');
+    window.setTimeout(focusSearch, 50);
+  }, [activeView, handleSelectView]);
+
+  const containedViewClass =
+    'mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16';
+
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-900">
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
       {/* Top Navigation */}
       <Navbar
         activeView={activeView}
         onSelectView={handleSelectView}
-        totalCapturesCount={captures.length}
-        authSession={authSession}
+        onSearch={handleSearchShortcut}
       />
 
-      {/* Centered Content Container (DESIGN_SYSTEM.md: max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16) */}
-      <main className="mx-auto flex-1 w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+      <main className="flex-1">
         {activeView === 'gallery' && (
           <GalleryView
             captures={filteredCaptures}
+            allCaptures={captures}
             totalCapturesCount={captures.length}
             collections={enrichedCollections}
             availableCameras={availableCameras}
@@ -398,29 +420,35 @@ export const App: React.FC = () => {
         )}
 
         {activeView === 'collections' && (
-          <CollectionsView
-            collections={enrichedCollections}
-            captures={captures}
-            onSelectCollection={handleSelectCollectionFromCard}
-          />
+          <div className={containedViewClass}>
+            <CollectionsView
+              collections={enrichedCollections}
+              captures={captures}
+              onSelectCollection={handleSelectCollectionFromCard}
+            />
+          </div>
         )}
 
         {activeView === 'about' && (
-          <AboutGearView
-            gearInventory={gearInventory}
-            onFilterByGear={handleFilterByGear}
-          />
+          <div className={containedViewClass}>
+            <AboutGearView
+              gearInventory={gearInventory}
+              onFilterByGear={handleFilterByGear}
+            />
+          </div>
         )}
 
         {activeView === 'admin' && (
-          <AdminStudioView
-            captures={captures}
-            collections={collections}
-            authSession={authSession}
-            onCreateCapture={handleCreateCapture}
-            onUpdateCapture={handleUpdateCapture}
-            onDeleteCapture={handleDeleteCapture}
-          />
+          <div className={containedViewClass}>
+            <AdminStudioView
+              captures={captures}
+              collections={collections}
+              authSession={authSession}
+              onCreateCapture={handleCreateCapture}
+              onUpdateCapture={handleUpdateCapture}
+              onDeleteCapture={handleDeleteCapture}
+            />
+          </div>
         )}
       </main>
 
@@ -433,15 +461,54 @@ export const App: React.FC = () => {
         onFilterByCamera={handleFilterByGear}
       />
 
-      {/* Restrained Editorial Footer */}
-      <footer className="border-t border-slate-200 bg-slate-50">
-        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-4 px-4 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-          <p>
-            Captures — Personal photography archive. Delivered via Cloudflare
-            Workers, D1 SQLite, R2 Storage &amp; Zero Trust Access.
-          </p>
-          <div className="flex items-center gap-4 font-medium text-slate-600">
-            <span>All EXIF telemetry verified</span>
+      {/* Footer (Figma "Gallery footer") */}
+      <footer id="contact" className="border-t border-line">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-4 pt-10 pb-7 sm:px-8 lg:px-16">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-[28px] font-normal text-ink">
+                The world through my lens.
+              </h2>
+              <p className="text-[13px] text-stone">
+                Good photographs deserve a quiet home. This is my personal
+                archive.
+              </p>
+            </div>
+            <a
+              href={`mailto:${SITE_CONFIG.contactEmail}`}
+              className="inline-flex min-h-10 items-center gap-6 self-start bg-ink px-[22px] py-4 text-[13px] font-medium text-white transition-colors hover:bg-ink/90 focus-visible:outline-2 focus-visible:outline-offset-2 sm:self-auto"
+            >
+              <span>Contact me</span>
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </div>
+
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <span className="text-[28px] leading-none font-semibold text-ink">
+                captures.
+              </span>
+              <p className="text-[11px] text-stone">
+                © {new Date().getFullYear()} {SITE_CONFIG.photographer}. All
+                photographs belong to the photographer.
+              </p>
+            </div>
+            <div className="flex items-center gap-7 text-[11px] text-stone">
+              <button
+                type="button"
+                aria-current={activeView === 'admin' ? 'page' : undefined}
+                onClick={() => handleSelectView('admin')}
+                className="inline-flex min-h-10 items-center hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                Admin studio
+              </button>
+              <a
+                href={`mailto:${SITE_CONFIG.contactEmail}`}
+                className="inline-flex min-h-10 items-center hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                Contact
+              </a>
+            </div>
           </div>
         </div>
       </footer>

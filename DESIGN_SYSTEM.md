@@ -202,3 +202,22 @@ Before considering a UI complete, confirm:
 - Hover, focus, disabled, loading, empty, and error states are accounted for where applicable.
 - The interface remains usable at mobile and desktop widths.
 - Controls are keyboard accessible and labels are clear.
+
+## Gallery theme (Figma "Concept A - Personal Gallery")
+
+The public gallery follows the Figma design at `figma.com/design/OirZXRVHOOQ9hC3THRiAWZ` (node `8:3`). Where this section conflicts with the foundations above, **this section wins for the gallery pages**; focus, hit-target, and contrast rules still apply.
+
+| Token | Value | Intended use |
+| --- | --- | --- |
+| `--color-paper` (`bg-paper`) | `#FAFAF8` | Page background |
+| `--color-line` (`border-line`) | `#D8DCCF` | Dividers, pill outlines, hover tints |
+| `--color-ink` (`text-ink`, `bg-ink`) | `#2B2E2A` | Primary text, active pills, primary buttons, focus ring |
+| `--color-stone` (`text-stone`) | `#6B7066` | Secondary text (darkened from Figma `#8A8F85` to meet WCAG AA 4.5:1) |
+| `--color-stone-soft` | `#8A8F85` | Figma muted value, decorative use only |
+
+- **Typeface:** Parkinsans (400 / 500 / 600) with Inter as fallback.
+- **Shape:** pills (`rounded-full`) for filters, outlined actions and badges; sharp corners for photographs and the footer call to action.
+- **Layout:** content width up to `1440px` with `px-4 sm:px-8 lg:px-16`; a 104px navigation bar and the full-bleed "Photo of the day" hero.
+- **Type scale (px):** nav identity 48, hero heading 58, section title 36, caption title 17, body 13, labels 10-12, eyebrow labels 9-11 uppercase.
+- **Images:** the hero is the LCP image (`fetchpriority="high"`); every grid image uses `loading="lazy"` alone.
+- Pages outside the gallery (Collections, About, Admin studio) still use the foundations above and will be migrated to this theme.

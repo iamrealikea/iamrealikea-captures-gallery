@@ -36,19 +36,19 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
       const galleryBtn = within(nav).getByRole('button', { name: /^gallery$/i });
       const collectionsBtn = within(nav).getByRole('button', { name: /^collections$/i });
-      const aboutBtn = within(nav).getByRole('button', { name: /about & gear/i });
-      const adminBtn = within(nav).getByRole('button', { name: /admin studio/i });
+      const aboutBtn = within(nav).getByRole('button', { name: /^about$/i });
+      const adminBtn = screen.getByRole('button', { name: /admin studio/i });
 
       // Gallery is active initially
       expect(galleryBtn).toHaveAttribute('aria-current', 'page');
-      expect(galleryBtn).toHaveClass('border-blue-600', 'bg-blue-50', 'text-blue-700');
+      expect(galleryBtn).toHaveClass('border-ink', 'text-ink', 'font-semibold');
       expect(collectionsBtn).not.toHaveAttribute('aria-current');
       expect(aboutBtn).not.toHaveAttribute('aria-current');
       expect(adminBtn).not.toHaveAttribute('aria-current');
 
       // Gallery view heading is present
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
     });
 
@@ -67,8 +67,8 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       ).toBeInTheDocument();
 
       // 2. Switch to About & gear
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
-      expect(within(nav).getByRole('button', { name: /about & gear/i })).toHaveAttribute(
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
+      expect(within(nav).getByRole('button', { name: /^about$/i })).toHaveAttribute(
         'aria-current',
         'page'
       );
@@ -77,8 +77,8 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       ).toBeInTheDocument();
 
       // 3. Switch to Admin studio
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
-      expect(within(nav).getByRole('button', { name: /admin studio/i })).toHaveAttribute(
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
+      expect(screen.getByRole('button', { name: /admin studio/i })).toHaveAttribute(
         'aria-current',
         'page'
       );
@@ -94,7 +94,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
         'page'
       );
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
     });
   });
@@ -118,12 +118,12 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
 
       // Verify redirection to Gallery view with collection filter active
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
 
       const archPill = screen.getByRole('button', { name: /architectural geometry/i });
       expect(archPill).toHaveAttribute('aria-pressed', 'true');
-      expect(archPill).toHaveClass('bg-blue-600', 'text-white');
+      expect(archPill).toHaveClass('bg-ink', 'text-white');
 
       // Verify filtered captures
       expect(screen.getByText('Brutalist concrete atrium')).toBeInTheDocument();
@@ -142,7 +142,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       );
 
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
 
       const minPill = screen.getByRole('button', { name: /atmospheric minimalism/i });
@@ -158,7 +158,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
       // Navigate to About & gear
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       expect(
         screen.getByRole('heading', { name: /gear & optics inventory/i })
       ).toBeInTheDocument();
@@ -169,7 +169,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
 
       // Verify Gallery view with camera filter applied
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
 
       const cameraSelect = screen.getByLabelText(/camera or gear/i) as unknown as HTMLSelectElement;
@@ -185,7 +185,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       render(<App />);
       const nav = screen.getByRole('navigation', { name: /primary navigation/i });
 
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
 
       // Click "View FE 24-70mm f/2.8 GM II captures"
       const lensBtn = screen.getByRole('button', {
@@ -194,7 +194,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       fireEvent.click(lensBtn);
 
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
       expect(screen.getByText('Spiral concrete stairwell')).toBeInTheDocument();
       expect(screen.queryByText('Shibuya rain reflections')).not.toBeInTheDocument();
@@ -215,7 +215,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       });
 
       // 2. Switch to About & gear -> Focus moves to about heading
-      fireEvent.click(within(nav).getByRole('button', { name: /about & gear/i }));
+      fireEvent.click(within(nav).getByRole('button', { name: /^about$/i }));
       await waitFor(() => {
         const heading = document.getElementById('about-view-heading');
         expect(heading).toHaveAttribute('tabindex', '-1');
@@ -223,7 +223,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
       });
 
       // 3. Switch to Admin studio -> Focus moves to admin heading
-      fireEvent.click(within(nav).getByRole('button', { name: /admin studio/i }));
+      fireEvent.click(screen.getByRole('button', { name: /admin studio/i }));
       await waitFor(() => {
         const heading = document.getElementById('admin-view-heading');
         expect(heading).toHaveAttribute('tabindex', '-1');
@@ -297,7 +297,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
     it('updates active view upon window popstate events', async () => {
       render(<App />);
       expect(
-        screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+        screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
       ).toBeInTheDocument();
 
       // Simulate popstate navigation to /admin
@@ -320,7 +320,7 @@ describe('Navigation, Routing & Cross-Filtering Test Suite', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('heading', { level: 1, name: /curated visual archive/i })
+          screen.getByRole('heading', { level: 1, name: /a moment, at home/i })
         ).toBeInTheDocument();
       });
     });
