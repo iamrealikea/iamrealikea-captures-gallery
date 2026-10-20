@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "captures-gallery",
+  "main": "worker/index.ts",
+  "compatibility_date": "2024-10-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "captures-gallery-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "captures-gallery-media"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "development",
+    "CF_ACCESS_TEAM_DOMAIN": "gallery-auth.cloudflareaccess.com",
+    "CF_ACCESS_AUD": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  }
+}
